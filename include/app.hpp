@@ -6,10 +6,10 @@
 namespace minesweeper {
     class App {
     private:
-        const std::string m_TITLE;
-        const int m_WIDTH;
-        const int m_HEIGHT;
-        static constexpr int m_AMOUNT_CELL{ 20 };
+        const std::string M_TITLE;
+        const int M_WIDTH;
+        const int M_HEIGHT;
+        static constexpr int M_AMOUNT_CELL{ 20 };
         
     private:
         SDL_Window *m_window;
@@ -25,12 +25,12 @@ namespace minesweeper {
         SDL_FRect m_dstrect{
             .x{},
             .y{},
-            .w{ static_cast<float>(m_WIDTH) / m_AMOUNT_CELL },
-            .h{ static_cast<float>(m_HEIGHT) / m_AMOUNT_CELL }
+            .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
+            .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
         };
 
     private:
-        std::array<std::array<int, m_AMOUNT_CELL>, m_AMOUNT_CELL> m_map;
+        std::array<std::array<int, M_AMOUNT_CELL>, M_AMOUNT_CELL> m_map;
         
     public:
         App(const std::string, const int, const int);

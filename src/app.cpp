@@ -1,9 +1,9 @@
 #include "app.hpp"
 
 minesweeper::App::App(const std::string title, const int width, const int height)
-    : m_TITLE{ title },
-      m_WIDTH{ width },
-      m_HEIGHT{ height }
+    : M_TITLE{ title },
+      M_WIDTH{ width },
+      M_HEIGHT{ height }
 {
     init_sdl();
     m_map.fill({ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 });
@@ -19,7 +19,7 @@ minesweeper::App::~App() {
 void minesweeper::App::init_sdl() {
     if (!SDL_Init(SDL_INIT_VIDEO)) { throw std::runtime_error(std::format("Error initialize SDL: {}", SDL_GetError())); }
 
-    m_window = SDL_CreateWindow(m_TITLE.c_str(), m_WIDTH, m_HEIGHT, 0);
+    m_window = SDL_CreateWindow(M_TITLE.c_str(), M_WIDTH, M_HEIGHT, 0);
     if (!m_window) { throw std::runtime_error(std::format("Error creating window: {}", SDL_GetError())); }
 
     m_renderer = SDL_CreateRenderer(m_window, nullptr);
@@ -38,10 +38,10 @@ void minesweeper::App::init_sdl() {
 }
 
 void minesweeper::App::render_map() {
-    for (int i{}; i < m_AMOUNT_CELL; ++i) {
-        for (int j{}; j < m_AMOUNT_CELL; ++j) {
-            m_dstrect.x = i * static_cast<float>(m_WIDTH) / m_AMOUNT_CELL;
-            m_dstrect.y = j * static_cast<float>(m_HEIGHT) / m_AMOUNT_CELL;
+    for (int i{}; i < M_AMOUNT_CELL; ++i) {
+        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+            m_dstrect.x = i * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL;
+            m_dstrect.y = j * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL;
             if (!SDL_RenderTexture(m_renderer, m_texture, &m_srcrect, &m_dstrect)) {
                 throw std::format("Error rendering texture: {}", SDL_GetError());
             }
