@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include <array>
 #include <format>
+#include <random>
 
 namespace minesweeper {
     class App {
@@ -15,19 +16,8 @@ namespace minesweeper {
         SDL_Window *m_window;
         SDL_Renderer *m_renderer;
         SDL_Surface *m_surface;
-        SDL_Texture *m_texture;
-        SDL_FRect m_srcrect{
-            .x{},
-            .y{},
-            .w{ 32.0f },
-            .h{ 32.0f }
-        };
-        SDL_FRect m_dstrect{
-            .x{},
-            .y{},
-            .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
-            .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
-        };
+        SDL_Texture *m_background_texture;
+        SDL_Texture *m_mine_texture;
 
     private:
         std::array<std::array<int, M_AMOUNT_CELL>, M_AMOUNT_CELL> m_map;
@@ -38,7 +28,9 @@ namespace minesweeper {
     
     private:
         void init_sdl();
-        void render_map();
+        void distribution_of_mines();
+        void render_background() const;
+        void render_mines() const;
     
     public:
         void run();
