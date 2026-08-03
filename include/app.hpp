@@ -1,8 +1,10 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <array>
 #include <format>
 #include <random>
+#include <string>
 
 namespace minesweeper {
     class App {
@@ -18,6 +20,10 @@ namespace minesweeper {
         SDL_Surface *m_surface;
         SDL_Texture *m_background_texture;
         SDL_Texture *m_mine_texture;
+        
+    private:
+        TTF_Font *m_font;
+        std::array<SDL_Texture *, 8> m_numbers_textures;
 
     private:
         std::array<std::array<int, M_AMOUNT_CELL>, M_AMOUNT_CELL> m_map;
@@ -32,6 +38,7 @@ namespace minesweeper {
         void distribution_of_numbers();
         void render_background() const;
         void render_mines() const;
+        void render_numbers() const;
     
     public:
         void run();

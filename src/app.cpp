@@ -1,5 +1,4 @@
 #include "app.hpp"
-#include <print>
 
 minesweeper::App::App(const std::string title, const int width, const int height)
     : M_TITLE{ title },
@@ -9,17 +8,11 @@ minesweeper::App::App(const std::string title, const int width, const int height
     init_sdl();
     distribution_of_mines();
     distribution_of_numbers();
-    
-    // For tests!!!
-    for (auto a : m_map) {
-        for (auto b : a) {
-            std::print("{} ", b);
-        }
-        std::println();
-    }
 }
 
 minesweeper::App::~App() {
+    for (SDL_Texture *number_texture : m_numbers_textures) { SDL_DestroyTexture(number_texture); }
+    TTF_Quit();
     SDL_DestroyTexture(m_mine_texture);
     SDL_DestroyTexture(m_background_texture);
     SDL_DestroyRenderer(m_renderer);
@@ -61,6 +54,24 @@ void minesweeper::App::init_sdl() {
     if (!SDL_SetTextureScaleMode(m_background_texture, SDL_SCALEMODE_NEAREST)) {
         throw std::runtime_error(std::format("Error setting mine texture scale mode: {}", SDL_GetError()));
     }
+
+    if (!TTF_Init()) { throw std::runtime_error(std::format("Error initialize TTF: {}", SDL_GetError())); }
+    
+    m_font = TTF_OpenFont("../font/Vaticanus-G3yVG.ttf", 32.0f);
+    if (!m_font) { throw std::runtime_error(std::format("Error open font: {}", SDL_GetError())); }
+    
+    for (int i{}; i < 8; ++i) {
+        m_surface = TTF_RenderText_Blended(m_font, std::to_string(i + 1).c_str(), 0, SDL_Color{ 0, 0, 255, 255 });
+        if (!m_surface) { throw std::runtime_error(std::format("Error loading text surface: {}", SDL_GetError())); }
+
+        m_numbers_textures.at(i) = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        if (!m_mine_texture) { throw std::runtime_error(std::format("Error creating numbers texture: {}", SDL_GetError())); }
+
+        if (!SDL_SetTextureScaleMode(m_numbers_textures.at(i), SDL_SCALEMODE_NEAREST)) {
+            throw std::runtime_error(std::format("Error setting numbers texture scale mode: {}", SDL_GetError()));
+        }
+    }
+    SDL_DestroySurface(m_surface);
 }
 
 void minesweeper::App::distribution_of_mines() {
@@ -148,6 +159,23 @@ void minesweeper::App::render_mines() const {
     }
 }
 
+void minesweeper::App::render_numbers() const {
+    for (int i{}; i < M_AMOUNT_CELL; ++i) {
+        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+            SDL_FRect dstrect{
+                .x{ j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL + 6.0f },
+                .y{ i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL + 1.5f },
+                .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL - 8.0f },
+                .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
+            };
+
+            int cell{ m_map.at(i).at(j) };
+            if (cell < 1) { continue; }
+            SDL_RenderTexture(m_renderer, m_numbers_textures.at(cell - 1), nullptr, &dstrect);
+        }
+    }
+}
+
 void minesweeper::App::run() {
     bool is_running{ true };
     while (is_running) {
@@ -164,6 +192,7 @@ void minesweeper::App::run() {
         SDL_RenderClear(m_renderer);
         render_background();
         render_mines();
+        render_numbers();
         SDL_RenderPresent(m_renderer);
     }
 }
