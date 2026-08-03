@@ -29,6 +29,7 @@ namespace minesweeper {
     private:
         void init_sdl();
         void distribution_of_mines();
+        void distribution_of_numbers();
         void render_background() const;
         void render_mines() const;
     
