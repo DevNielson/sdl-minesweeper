@@ -1,4 +1,5 @@
 #include "app.hpp"
+#include <print>
 
 minesweeper::App::App(const std::string title, const int width, const int height)
     : M_TITLE{ title },
@@ -8,6 +9,7 @@ minesweeper::App::App(const std::string title, const int width, const int height
     init_sdl();
     distribution_of_mines();
     distribution_of_numbers();
+    distribution_of_buttons();
 }
 
 minesweeper::App::~App() {
@@ -123,6 +125,22 @@ void minesweeper::App::distribution_of_numbers() {
     }
 }
 
+void minesweeper::App::distribution_of_buttons() {
+    for (int i{}; i < M_AMOUNT_CELL; ++i) {
+        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+            m_buttons.push_back({
+            m_renderer,
+            "../assets/map-3.png",
+            SDL_FRect{
+                j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL,
+                i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL,
+                25.0f,
+                25.0f
+            }});
+        }
+    }
+}
+
 void minesweeper::App::render_background() const {
     for (int i{}; i < M_AMOUNT_CELL; ++i) {
         for (int j{}; j < M_AMOUNT_CELL; ++j) {
@@ -169,9 +187,11 @@ void minesweeper::App::render_numbers() const {
                 .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
             };
 
-            int cell{ m_map.at(i).at(j) };
-            if (cell < 1) { continue; }
-            SDL_RenderTexture(m_renderer, m_numbers_textures.at(cell - 1), nullptr, &dstrect);
+            const int CELL{ m_map.at(i).at(j) };
+            if (CELL < 1) { continue; }
+            if (!SDL_RenderTexture(m_renderer, m_numbers_textures.at(CELL - 1), nullptr, &dstrect)) {
+                throw std::runtime_error(std::format("Error rendering number texture: {}", SDL_GetError()));
+            }
         }
     }
 }
@@ -189,10 +209,22 @@ void minesweeper::App::run() {
                     break;
             }
         }
-        SDL_RenderClear(m_renderer);
+        
+        for (int i{}; i < m_buttons.size(); ++i) {
+            if (!m_buttons.at(i).update()) { m_buttons.erase(m_buttons.begin() + i, m_buttons.begin() + i + 1); }
+        }
+        
+        if (!SDL_RenderClear(m_renderer)) {
+            throw std::runtime_error(std::format("Error in render clear: {}", SDL_GetError()));
+        }
+
         render_background();
         render_mines();
         render_numbers();
-        SDL_RenderPresent(m_renderer);
+        for (const Button button : m_buttons) { button.render_button(m_renderer); }
+
+        if (!SDL_RenderPresent(m_renderer)) {
+            throw std::runtime_error(std::format("Error in render present: {}", SDL_GetError()));
+        }
     }
 }

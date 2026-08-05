@@ -1,10 +1,10 @@
 #pragma once
-#include <SDL3/SDL.h>
+#include "button.hpp"
 #include <SDL3_ttf/SDL_ttf.h>
 #include <array>
-#include <format>
 #include <random>
 #include <string>
+#include <vector>
 
 namespace minesweeper {
     class App {
@@ -27,6 +27,7 @@ namespace minesweeper {
 
     private:
         std::array<std::array<int, M_AMOUNT_CELL>, M_AMOUNT_CELL> m_map;
+        std::vector<Button> m_buttons;
         
     public:
         App(const std::string, const int, const int);
@@ -36,6 +37,9 @@ namespace minesweeper {
         void init_sdl();
         void distribution_of_mines();
         void distribution_of_numbers();
+        void distribution_of_buttons();
+        
+    private:
         void render_background() const;
         void render_mines() const;
         void render_numbers() const;
