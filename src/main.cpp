@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv) {
     try {
-        minesweeper::App app{ "Minesweeper", 500, 500 };
+        minesweeper::App app{ "Minesweeper", 20, 20 };
         app.run();
     }
     catch (const std::exception &e) {

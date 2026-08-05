@@ -1,10 +1,9 @@
 #include "app.hpp"
-#include <print>
 
-minesweeper::App::App(const std::string title, const int width, const int height)
+minesweeper::App::App(const std::string title, const int row_number_cells, const int column_number_cells)
     : M_TITLE{ title },
-      M_WIDTH{ width },
-      M_HEIGHT{ height }
+      M_ROW_NUMBER_CELLS{ row_number_cells },
+      M_COLUMN_NUMBER_CELLS{ column_number_cells }
 {
     init_sdl();
     distribution_of_mines();
@@ -27,7 +26,7 @@ void minesweeper::App::init_sdl() {
         throw std::runtime_error(std::format("Error initialize SDL: {}", SDL_GetError()));
     }
 
-    m_window = SDL_CreateWindow(M_TITLE.c_str(), M_WIDTH, M_HEIGHT, 0);
+    m_window = SDL_CreateWindow(M_TITLE.c_str(), M_COLUMN_NUMBER_CELLS * CELL_SIZE, M_ROW_NUMBER_CELLS * CELL_SIZE, 0);
     if (!m_window) { throw std::runtime_error(std::format("Error creating window: {}", SDL_GetError())); }
 
     m_renderer = SDL_CreateRenderer(m_window, nullptr);
@@ -80,16 +79,18 @@ void minesweeper::App::distribution_of_mines() {
     std::uniform_int_distribution<int> distribution(0, 5);
     std::random_device random;
 
-    for (auto &line : m_map) {
-        for (auto &cell : line) {
-            cell = (distribution(random) == 0) ? (-1) : (0);
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        std::vector<std::int8_t> row;
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
+            row.push_back((distribution(random) == 0) ? (-1) : (0));
         }
+        m_map.push_back(row);
     }
 }
 
 void minesweeper::App::distribution_of_numbers() {
-    for (int i{}; i < M_AMOUNT_CELL; ++i) {
-        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
             int counter{};
             
             if (m_map.at(i).at(j) == -1) { continue; }
@@ -97,26 +98,26 @@ void minesweeper::App::distribution_of_numbers() {
             if (i - 1 >= 0) {
                 if (m_map.at(i - 1).at(j) == -1) { ++counter; }
             }
-            if (i + 1 < M_AMOUNT_CELL) {
+            if (i + 1 < M_ROW_NUMBER_CELLS) {
                 if (m_map.at(i + 1).at(j) == -1) { ++counter; }
             }
             if (j - 1 >= 0) {
                 if (m_map.at(i).at(j - 1) == -1) { ++counter; }
             }
-            if (j + 1 < M_AMOUNT_CELL) {
+            if (j + 1 < M_COLUMN_NUMBER_CELLS) {
                 if (m_map.at(i).at(j + 1) == -1) { ++counter; }
             }
             
             if ((i - 1 >= 0) && (j - 1 >= 0)) {
                 if (m_map.at(i - 1).at(j - 1) == -1) { ++counter; }
             }
-            if ((i - 1 >= 0) && (j + 1 < M_AMOUNT_CELL)) {
+            if ((i - 1 >= 0) && (j + 1 < M_COLUMN_NUMBER_CELLS)) {
                 if (m_map.at(i - 1).at(j + 1) == -1) { ++counter; }
             }
-            if ((i + 1 < M_AMOUNT_CELL) && (j + 1 < M_AMOUNT_CELL)) {
+            if ((i + 1 < M_ROW_NUMBER_CELLS) && (j + 1 < M_COLUMN_NUMBER_CELLS)) {
                 if (m_map.at(i + 1).at(j + 1) == -1) { ++counter; }
             }
-            if ((i + 1 < M_AMOUNT_CELL) && (j - 1 >= 0)) {
+            if ((i + 1 < M_ROW_NUMBER_CELLS) && (j - 1 >= 0)) {
                 if (m_map.at(i + 1).at(j - 1) == -1) { ++counter; }
             }
             
@@ -126,29 +127,29 @@ void minesweeper::App::distribution_of_numbers() {
 }
 
 void minesweeper::App::distribution_of_buttons() {
-    for (int i{}; i < M_AMOUNT_CELL; ++i) {
-        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
             m_buttons.push_back({
-            m_renderer,
-            "../assets/map-3.png",
-            SDL_FRect{
-                j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL,
-                i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL,
-                25.0f,
-                25.0f
+                m_renderer,
+                "../assets/map-3.png",
+                SDL_FRect{
+                    j * CELL_SIZE,
+                    i * CELL_SIZE,
+                    CELL_SIZE,
+                    CELL_SIZE
             }});
         }
     }
 }
 
 void minesweeper::App::render_background() const {
-    for (int i{}; i < M_AMOUNT_CELL; ++i) {
-        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
             SDL_FRect dstrect{
-                .x{ j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
-                .y{ i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL },
-                .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
-                .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
+                .x{ j * CELL_SIZE },
+                .y{ i * CELL_SIZE },
+                .w{ CELL_SIZE },
+                .h{ CELL_SIZE }
             };
 
             if (!SDL_RenderTexture(m_renderer, m_background_texture, nullptr, &dstrect)) {
@@ -159,15 +160,15 @@ void minesweeper::App::render_background() const {
 }
 
 void minesweeper::App::render_mines() const {
-    for (int i{}; i < M_AMOUNT_CELL; ++i) {
-        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
             if (m_map.at(i).at(j) != -1) { continue; }
 
             SDL_FRect dstrect{
-                .x{ j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
-                .y{ i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL },
-                .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL },
-                .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
+                .x{ j * CELL_SIZE },
+                .y{ i * CELL_SIZE },
+                .w{ CELL_SIZE },
+                .h{ CELL_SIZE }
             };
 
             if (!SDL_RenderTexture(m_renderer, m_mine_texture, nullptr, &dstrect)) {
@@ -178,13 +179,13 @@ void minesweeper::App::render_mines() const {
 }
 
 void minesweeper::App::render_numbers() const {
-    for (int i{}; i < M_AMOUNT_CELL; ++i) {
-        for (int j{}; j < M_AMOUNT_CELL; ++j) {
+    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i) {
+        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) {
             SDL_FRect dstrect{
-                .x{ j * static_cast<float>(M_WIDTH) / M_AMOUNT_CELL + 6.0f },
-                .y{ i * static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL + 1.5f },
-                .w{ static_cast<float>(M_WIDTH) / M_AMOUNT_CELL - 8.0f },
-                .h{ static_cast<float>(M_HEIGHT) / M_AMOUNT_CELL }
+                .x{ j * CELL_SIZE + 6.0f },
+                .y{ i * CELL_SIZE + 1.5f },
+                .w{ CELL_SIZE - 8.0f },
+                .h{ CELL_SIZE }
             };
 
             const int CELL{ m_map.at(i).at(j) };

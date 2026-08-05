@@ -1,6 +1,5 @@
 #pragma once
-#include <SDL3/SDL.h>
-#include <format>
+#include "main.hpp"
 
 namespace minesweeper {
     class Button {

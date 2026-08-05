@@ -1,18 +1,12 @@
 #pragma once
 #include "button.hpp"
-#include <SDL3_ttf/SDL_ttf.h>
-#include <array>
-#include <random>
-#include <string>
-#include <vector>
 
 namespace minesweeper {
     class App {
     private:
         const std::string M_TITLE;
-        const int M_WIDTH;
-        const int M_HEIGHT;
-        static constexpr int M_AMOUNT_CELL{ 20 };
+        const int M_ROW_NUMBER_CELLS;
+        const int M_COLUMN_NUMBER_CELLS;
         
     private:
         SDL_Window *m_window;
@@ -26,7 +20,7 @@ namespace minesweeper {
         std::array<SDL_Texture *, 8> m_numbers_textures;
 
     private:
-        std::array<std::array<int, M_AMOUNT_CELL>, M_AMOUNT_CELL> m_map;
+        std::vector<std::vector<std::int8_t>> m_map;
         std::vector<Button> m_buttons;
         
     public:
