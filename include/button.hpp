@@ -4,9 +4,13 @@
 namespace minesweeper {
     class Button {
     private:
+        bool m_can_cave{ true };
+
+    private:
         SDL_Surface *m_surface;
         SDL_Texture *m_texture;
         SDL_FRect m_dstrect;
+        SDL_Texture *m_flag_texture;
         
     public:
         Button() = default;

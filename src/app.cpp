@@ -206,13 +206,16 @@ void minesweeper::App::run() {
                 case SDL_EVENT_QUIT:
                     is_running = false;
                     break;
+                case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                    for (int i{}; i < m_buttons.size(); ++i) {
+                        if (!m_buttons.at(i).update()) {
+                            m_buttons.erase(m_buttons.begin() + i, m_buttons.begin() + i + 1);
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
-        }
-        
-        for (int i{}; i < m_buttons.size(); ++i) {
-            if (!m_buttons.at(i).update()) { m_buttons.erase(m_buttons.begin() + i, m_buttons.begin() + i + 1); }
         }
         
         if (!SDL_RenderClear(m_renderer)) {
