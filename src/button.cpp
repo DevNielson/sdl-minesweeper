@@ -1,5 +1,4 @@
 #include "button.hpp"
-#include <print>
 
 minesweeper::Button::Button(SDL_Renderer *renderer, const std::string filepath, const SDL_FRect rect)
     : m_dstrect{ rect }
@@ -11,7 +10,7 @@ minesweeper::Button::Button(SDL_Renderer *renderer, const std::string filepath, 
     SDL_DestroySurface(m_surface);
     if (!m_texture) { throw std::runtime_error(std::format("Error creating texture: {}", SDL_GetError())); }
     
-    if(!SDL_SetTextureScaleMode(m_texture, SDL_SCALEMODE_NEAREST)) {
+    if(!SDL_SetTextureScaleMode(m_texture, SDL_SCALEMODE_PIXELART)) {
         throw std::runtime_error(std::format("Error setting texture scale mode: {}", SDL_GetError()));
     }
 
@@ -22,7 +21,7 @@ minesweeper::Button::Button(SDL_Renderer *renderer, const std::string filepath, 
     SDL_DestroySurface(m_surface);
     if (!m_texture) { throw std::runtime_error(std::format("Error creating flag texture: {}", SDL_GetError())); }
     
-    if(!SDL_SetTextureScaleMode(m_flag_texture, SDL_SCALEMODE_NEAREST)) {
+    if(!SDL_SetTextureScaleMode(m_flag_texture, SDL_SCALEMODE_PIXELART)) {
         throw std::runtime_error(std::format("Error setting flag texture scale mode: {}", SDL_GetError()));
     }
 }

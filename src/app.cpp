@@ -41,7 +41,7 @@ void minesweeper::App::init_sdl() {
         throw std::runtime_error(std::format("Error creating background texture: {}", SDL_GetError()));
     }
     
-    if (!SDL_SetTextureScaleMode(m_background_texture, SDL_SCALEMODE_NEAREST)) {
+    if (!SDL_SetTextureScaleMode(m_background_texture, SDL_SCALEMODE_PIXELART)) {
         throw std::runtime_error(std::format("Error setting background texture scale mode: {}", SDL_GetError()));
     }
     
@@ -52,7 +52,7 @@ void minesweeper::App::init_sdl() {
     SDL_DestroySurface(m_surface);
     if (!m_mine_texture) { throw std::runtime_error(std::format("Error creating mine texture: {}", SDL_GetError())); }
     
-    if (!SDL_SetTextureScaleMode(m_background_texture, SDL_SCALEMODE_NEAREST)) {
+    if (!SDL_SetTextureScaleMode(m_background_texture, SDL_SCALEMODE_PIXELART)) {
         throw std::runtime_error(std::format("Error setting mine texture scale mode: {}", SDL_GetError()));
     }
 
@@ -68,7 +68,7 @@ void minesweeper::App::init_sdl() {
         m_numbers_textures.at(i) = SDL_CreateTextureFromSurface(m_renderer, m_surface);
         if (!m_mine_texture) { throw std::runtime_error(std::format("Error creating numbers texture: {}", SDL_GetError())); }
 
-        if (!SDL_SetTextureScaleMode(m_numbers_textures.at(i), SDL_SCALEMODE_NEAREST)) {
+        if (!SDL_SetTextureScaleMode(m_numbers_textures.at(i), SDL_SCALEMODE_PIXELART)) {
             throw std::runtime_error(std::format("Error setting numbers texture scale mode: {}", SDL_GetError()));
         }
     }
