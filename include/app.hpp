@@ -1,8 +1,10 @@
 #pragma once
 #include "button.hpp"
 
-namespace minesweeper {
-    class App {
+namespace minesweeper
+{
+    class App
+    {
     private:
         const std::string M_TITLE;
         const int M_ROW_NUMBER_CELLS;

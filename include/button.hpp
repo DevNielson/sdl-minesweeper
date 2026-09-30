@@ -1,8 +1,10 @@
 #pragma once
 #include "main.hpp"
 
-namespace minesweeper {
-    class Button {
+namespace minesweeper
+{
+    class Button
+    {
     private:
         bool m_can_cave{ true };
 
