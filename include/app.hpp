@@ -22,7 +22,8 @@ namespace minesweeper
         std::array<SDL_Texture *, 8> m_numbers_textures;
 
     private:
-        std::vector<std::vector<std::int8_t>> m_map;
+        // std::vector<std::vector<std::int8_t>> m_map;
+        std::vector<std::int8_t> m_map;
         std::vector<Button> m_buttons;
         
     public:
@@ -34,6 +35,7 @@ namespace minesweeper
         void distribution_of_mines();
         void distribution_of_numbers();
         void distribution_of_buttons();
+        void auto_cave();
         
     private:
         void render_background() const;

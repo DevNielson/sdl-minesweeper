@@ -31,7 +31,7 @@ bool minesweeper::Button::update()
     float x{}, y{};
     const SDL_MouseButtonFlags MOUSE_BUTTON_FLAG{ SDL_GetMouseState(&x, &y) };
 
-    if ((MOUSE_BUTTON_FLAG == 4)
+    if ((MOUSE_BUTTON_FLAG == SDL_BUTTON_X1)
         && ((x > m_dstrect.x) && (x < m_dstrect.x + m_dstrect.w))
         && ((y > m_dstrect.y) && (y < m_dstrect.y + m_dstrect.w)))
     { m_can_cave = !m_can_cave; }

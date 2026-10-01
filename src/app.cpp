@@ -81,15 +81,19 @@ void minesweeper::App::distribution_of_mines()
     std::uniform_int_distribution<int> distribution(0, 5);
     std::random_device random;
 
-    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
+    for (int i{}; i < M_ROW_NUMBER_CELLS * M_COLUMN_NUMBER_CELLS; ++i)
     {
+        /*
         std::vector<std::int8_t> row;
         for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j) { row.push_back((distribution(random) == 0) ? (-1) : (0)); }
 
         m_map.push_back(row);
+        */
+        m_map.push_back((distribution(random) == 0) ? (-1) : (0));
     }
 }
 
+/*
 void minesweeper::App::distribution_of_numbers()
 {
     for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
@@ -138,19 +142,69 @@ void minesweeper::App::distribution_of_numbers()
         }
     }
 }
+*/
+
+void minesweeper::App::distribution_of_numbers()
+{
+    for (int y{}; y < M_ROW_NUMBER_CELLS; ++y)
+    {
+        for (int x{}; x < M_COLUMN_NUMBER_CELLS; ++x)
+        {
+            int counter{};
+            
+            if (m_map.at(M_ROW_NUMBER_CELLS * y + x) == -1) { continue; }
+
+            if (y - 1 >= 0)
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y - 1) + x) == -1) { ++counter; }
+            }
+            if (y + 1 < M_ROW_NUMBER_CELLS)
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y + 1) + x) == -1) { ++counter; }
+            }
+            if (x - 1 >= 0)
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * y + (x - 1)) == -1) { ++counter; }
+            }
+            if (x + 1 < M_COLUMN_NUMBER_CELLS)
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * y + (x + 1)) == -1) { ++counter; }
+            }
+            
+            if ((y - 1 >= 0) && (x - 1 >= 0))
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y - 1) + (x - 1)) == -1) { ++counter; }
+            }
+            if ((y - 1 >= 0) && (x + 1 < M_COLUMN_NUMBER_CELLS))
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y - 1) + (x + 1)) == -1) { ++counter; }
+            }
+            if ((y + 1 < M_ROW_NUMBER_CELLS) && (x + 1 < M_COLUMN_NUMBER_CELLS))
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y + 1) + (x + 1)) == -1) { ++counter; }
+            }
+            if ((y + 1 < M_ROW_NUMBER_CELLS) && (x - 1 >= 0))
+            {
+                if (m_map.at(M_ROW_NUMBER_CELLS * (y + 1) + (x - 1)) == -1) { ++counter; }
+            }
+            
+            m_map.at(M_ROW_NUMBER_CELLS * y + x) = counter;
+        }
+    }
+}
 
 void minesweeper::App::distribution_of_buttons()
 {
-    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
+    for (int y{}; y < M_ROW_NUMBER_CELLS; ++y)
     {
-        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j)
+        for (int x{}; x < M_COLUMN_NUMBER_CELLS; ++x)
         {
             m_buttons.push_back({
                 m_renderer,
                 "../assets/map-3.png",
                 SDL_FRect{
-                    j * CELL_SIZE,
-                    i * CELL_SIZE,
+                    x * CELL_SIZE,
+                    y * CELL_SIZE,
                     CELL_SIZE,
                     CELL_SIZE
                 }
@@ -161,15 +215,15 @@ void minesweeper::App::distribution_of_buttons()
 
 void minesweeper::App::render_background() const
 {
-    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
+    for (int y{}; y < M_ROW_NUMBER_CELLS; ++y)
     {
-        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j)
+        for (int x{}; x < M_COLUMN_NUMBER_CELLS; ++x)
         {
             SDL_FRect dstrect{
-                .x{ j * CELL_SIZE },
-                .y{ i * CELL_SIZE },
-                .w{ CELL_SIZE },
-                .h{ CELL_SIZE }
+                x * CELL_SIZE,
+                y * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE
             };
 
             if (!SDL_RenderTexture(m_renderer, m_background_texture, nullptr, &dstrect))
@@ -178,6 +232,7 @@ void minesweeper::App::render_background() const
     }
 }
 
+/*
 void minesweeper::App::render_mines() const
 {
     for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
@@ -198,22 +253,45 @@ void minesweeper::App::render_mines() const
         }
     }
 }
+*/
+
+void minesweeper::App::render_mines() const
+{
+    for (int y{}; y < M_ROW_NUMBER_CELLS; ++y)
+    {
+        for (int x{}; x < M_COLUMN_NUMBER_CELLS; ++x)
+        {
+            if (m_map.at(M_ROW_NUMBER_CELLS * y + x) != -1) { continue; }
+
+            SDL_FRect dstrect{
+                x * CELL_SIZE,
+                y * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE
+            };
+
+            if (!SDL_RenderTexture(m_renderer, m_mine_texture, nullptr, &dstrect))
+            { throw std::format("Error rendering mine texture: {}", SDL_GetError()); }
+        }
+    }
+}
 
 void minesweeper::App::render_numbers() const
 {
-    for (int i{}; i < M_ROW_NUMBER_CELLS; ++i)
+    for (int y{}; y < M_ROW_NUMBER_CELLS; ++y)
     {
-        for (int j{}; j < M_COLUMN_NUMBER_CELLS; ++j)
+        for (int x{}; x < M_COLUMN_NUMBER_CELLS; ++x)
         {
             SDL_FRect dstrect{
-                .x{ j * CELL_SIZE + 6.0f },
-                .y{ i * CELL_SIZE + 1.5f },
-                .w{ CELL_SIZE - 8.0f },
-                .h{ CELL_SIZE }
+                x * CELL_SIZE + 6.0f,
+                y * CELL_SIZE + 1.5f,
+                CELL_SIZE - 8.0f,
+                CELL_SIZE
             };
 
-            const int CELL{ m_map.at(i).at(j) };
+            const int CELL{ m_map.at(M_ROW_NUMBER_CELLS * y + x) };
             if (CELL < 1) { continue; }
+
             if (!SDL_RenderTexture(m_renderer, m_numbers_textures.at(CELL - 1), nullptr, &dstrect))
             { throw std::runtime_error(std::format("Error rendering number texture: {}", SDL_GetError())); }
         }
@@ -237,7 +315,10 @@ void minesweeper::App::run()
                     for (int i{}; i < m_buttons.size(); ++i)
                     {
                         if (!m_buttons.at(i).update())
-                        { m_buttons.erase(m_buttons.begin() + i, m_buttons.begin() + i + 1); }
+                        {
+                            m_buttons.erase(m_buttons.begin() + i, m_buttons.begin() + i + 1);
+                            // auto_cave(i);
+                        }
                     }
                     break;
                 default:
